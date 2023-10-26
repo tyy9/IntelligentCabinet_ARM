@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TableItem</class>
+ <widget class="QWidget" name="TableItem">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>0</y>
+     <width>526</width>
+     <height>202</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>200</height>
+    </size>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="btnTable1">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnTable2">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnTable3">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnTable4">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnTable5">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
