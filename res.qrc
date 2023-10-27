@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/new/prefix1">
         <file>res/icon/scan.png</file>
+        <file>res/icon/user (2).png</file>
     </qresource>
 </RCC>

@@ -30,6 +30,7 @@
 #include "myserial.h"
 #include<QTimer>
 #include<QDate>
+#include"loginwindow.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -56,6 +57,8 @@ private slots:
     void getCount(QNetworkReply* reply);
     void MyClock();
 
+    void on_btnAdmin_pressed();
+
 signals:
     void checkCardOK(int role,QString cardid);
 
@@ -67,6 +70,7 @@ private:
     QNetworkAccessManager *manager_getTableInfo;
     QNetworkAccessManager *manager_checkCardInfo;
     QNetworkAccessManager *manager_getFreeTableCount;
+    LoginWindow *loginwindow;
     QVector<TableInfo*> tableinfo_v;
     TableItem *tableitem;
     StoreDialog *storedialog;

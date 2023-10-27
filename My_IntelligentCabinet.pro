@@ -9,8 +9,11 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    keyborad.cpp \
+    loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    mybutton.cpp \
     mycamera.cpp \
     myserial.cpp \
     storedialog.cpp \
@@ -18,7 +21,10 @@ SOURCES += \
     tableitem.cpp
 
 HEADERS += \
+    keyborad.h \
+    loginwindow.h \
     mainwindow.h \
+    mybutton.h \
     mycamera.h \
     myhead.h \
     myserial.h \
@@ -27,6 +33,8 @@ HEADERS += \
     tableitem.h
 
 FORMS += \
+    keyborad.ui \
+    loginwindow.ui \
     mainwindow.ui \
     storedialog.ui \
     tableitem.ui

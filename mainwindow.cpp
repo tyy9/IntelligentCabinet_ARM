@@ -36,6 +36,8 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start();
     connect(timer,SIGNAL(timeout()),this,SLOT(MyClock()));
     //--------------
+
+    //-------------
     //主窗口的自己的信号与槽
     connect(this,SIGNAL(checkCardOK(int,QString)),tableitem,SLOT(CheckCardOK(int,QString)));
     connect(tableitem,SIGNAL(refreshTableData()),this,SLOT(refreshTableData()));
@@ -308,5 +310,15 @@ void MainWindow::on_btnTakeItem_pressed()
     tableitem->setStudentflag(1);
     storedialog=new StoreDialog(this);
     storedialog->exec();
+}
+
+
+void MainWindow::on_btnAdmin_pressed()
+{
+    //---登录窗口
+    loginwindow=new LoginWindow(this);
+    camera->setFlag(0);//关闭摄像头
+    loginwindow->show();
+    this->hide();
 }
 
