@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     //主窗口的自己的信号与槽
     connect(this,SIGNAL(checkCardOK(int,QString)),tableitem,SLOT(CheckCardOK(int,QString)));
     connect(tableitem,SIGNAL(refreshTableData()),this,SLOT(refreshTableData()));
+    //connect(loginwindow,SIGNAL(ReturnSignal()),this,SLOT(refreshTableData()));
 }
 
 MainWindow::~MainWindow()
@@ -55,6 +56,10 @@ void MainWindow::MyClock(){
     ui->labelClock->setText(time.toString("hh:mm:ss"));
 }
 void MainWindow::refreshTableData(){
+    if(!camera->isRunning()){
+        camera->start();
+        camera->setFlag(1);//开启摄像头
+    }
     getFreeTableCount();
     GetTableInfo(page,5);
 }
@@ -317,6 +322,7 @@ void MainWindow::on_btnAdmin_pressed()
 {
     //---登录窗口
     loginwindow=new LoginWindow(this);
+    connect(loginwindow,SIGNAL(ReturnSignal()),this,SLOT(refreshTableData()));
     camera->setFlag(0);//关闭摄像头
     loginwindow->show();
     this->hide();

@@ -13,6 +13,9 @@ public:
     void setCardid(QString cardid);
     QString getTname();
     int getState();
+    int getOrderId();
+    QString getcardid();
+    int getId();
     QString toString();
 private:
     int id;

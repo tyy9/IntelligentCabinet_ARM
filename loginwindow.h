@@ -16,6 +16,7 @@
 #include<QJsonValue>
 #include<QPushButton>
 #include<QMessageBox>
+#include "managermenu.h"
 namespace Ui {
 class LoginWindow;
 }
@@ -29,14 +30,15 @@ public:
     ~LoginWindow();
 
 private slots:
-
     void on_btnReturn_pressed();
     void LoginReply(QNetworkReply* reply);
     void on_btnLogin_pressed();
-
+signals:
+    void ReturnSignal();
 private:
     Ui::LoginWindow *ui;
     QNetworkAccessManager *manager_login;
+    ManagerMenu *managermenu;
 };
 
 #endif // LOGINWINDOW_H

@@ -25,6 +25,16 @@ QString TableInfo::getTname(){
 int TableInfo::getState(){
     return state;
 }
+int TableInfo::getId(){
+    return id;
+}
+int TableInfo::getOrderId(){
+    return OrderId;
+}
+QString TableInfo::getcardid(){
+    return cardid;
+}
+
 QString TableInfo::toString(){
     qDebug()<<"id:"<<id<<"tName:"<<tName<<"OrderId:"<<OrderId<<"state:"<<state;
 }

@@ -13,6 +13,7 @@ SOURCES += \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    managermenu.cpp \
     mybutton.cpp \
     mycamera.cpp \
     myserial.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     keyborad.h \
     loginwindow.h \
     mainwindow.h \
+    managermenu.h \
     mybutton.h \
     mycamera.h \
     myhead.h \
@@ -36,6 +38,7 @@ FORMS += \
     keyborad.ui \
     loginwindow.ui \
     mainwindow.ui \
+    managermenu.ui \
     storedialog.ui \
     tableitem.ui
 

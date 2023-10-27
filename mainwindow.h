@@ -26,7 +26,7 @@
 #include<QIODevice>
 #include<QMessageBox>
 #include<QString>
-#include"tableitem.h"
+
 #include "myserial.h"
 #include<QTimer>
 #include<QDate>

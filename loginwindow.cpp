@@ -20,6 +20,7 @@ void LoginWindow::on_btnReturn_pressed()
     //获取上一个界面
     QWidget *w=this->parentWidget();
     w->show();
+    emit ReturnSignal();
     delete this;
     //this->close();
 }
@@ -55,6 +56,9 @@ void LoginWindow::LoginReply(QNetworkReply* reply){
     }
     if(code==20001){
         QMessageBox::information(this,"提示","登录成功");
+        managermenu=new ManagerMenu(this);
+        this->hide();
+        managermenu->show();
     }else{
         QMessageBox::information(this,"提示","登录失败");
     }
