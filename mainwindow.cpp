@@ -166,7 +166,7 @@ void MainWindow::BarCodeScan(QNetworkReply *reply)
         }
         qDebug()<<"id:"<<OrderId;
         ui->LabelOrderId->setText(OrderId);
-        tableitem->setOrderId(OrderId);
+        tableitem->setOrderId(OrderId.toInt());
     }
 }
 void MainWindow::receiveTableInfo(QNetworkReply *reply)

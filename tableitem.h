@@ -29,7 +29,7 @@ public:
     void LoadItemData(QVector<TableInfo*> &TableInfo_v);
     void setScanflag(int scanflag);
     void setStudentflag(int studentflag);
-    void setOrderId(QString OrderId);
+    void setOrderId(int OrderId);
     void UpdateTableinfo(QString cardid,int status);
     void checkUsrInfo(QString cardid);
 private slots:
@@ -42,7 +42,7 @@ signals:
 private:
     Ui::TableItem *ui;
     QString tname;
-    QString OrderId;
+    int OrderId;
     int scanflag;
     int studentflag;//学生刷卡标志
     StoreDialog *store;

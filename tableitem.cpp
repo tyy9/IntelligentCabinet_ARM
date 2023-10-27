@@ -12,7 +12,7 @@ TableItem::TableItem(QWidget *parent) :
     scanflag=0;
     studentflag=0;
     store=NULL;
-    OrderId="0";
+    OrderId=0;
     connect(ui->btnTable1,SIGNAL(pressed()),this,SLOT(storeFunc()));
     connect(ui->btnTable2,SIGNAL(pressed()),this,SLOT(storeFunc()));
     connect(ui->btnTable3,SIGNAL(pressed()),this,SLOT(storeFunc()));
@@ -24,7 +24,7 @@ TableItem::~TableItem()
 {
     delete ui;
 }
-void TableItem::setOrderId(QString OrderId){
+void TableItem::setOrderId(int OrderId){
     this->OrderId=OrderId;
 }
 void TableItem::setStudentflag(int studentflag){
