@@ -30,6 +30,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(myserial,SIGNAL(checkCard(int)),this,SLOT(checkoutCard(int)));
     myserial->start();
     //---------------
+    //---定时器初始化
+    timer=new QTimer(this);
+    timer->setInterval(1000);
+    timer->start();
+    connect(timer,SIGNAL(timeout()),this,SLOT(MyClock()));
+    //--------------
     //主窗口的自己的信号与槽
     connect(this,SIGNAL(checkCardOK(int,QString)),tableitem,SLOT(CheckCardOK(int,QString)));
     connect(tableitem,SIGNAL(refreshTableData()),this,SLOT(refreshTableData()));
@@ -38,6 +44,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+void MainWindow::MyClock(){
+    //获取当前时间与日期
+    QTime time(QTime::currentTime());
+    QDate date(QDate::currentDate());
+    ui->labelDate->setText(date.toString("yyyy-MM-dd"));
+    ui->labelClock->setText(time.toString("hh:mm:ss"));
 }
 void MainWindow::refreshTableData(){
     getFreeTableCount();

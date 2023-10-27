@@ -28,6 +28,8 @@
 #include<QString>
 #include"tableitem.h"
 #include "myserial.h"
+#include<QTimer>
+#include<QDate>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -52,6 +54,7 @@ private slots:
     void refreshTableData();
     void on_btnTakeItem_pressed();
     void getCount(QNetworkReply* reply);
+    void MyClock();
 
 signals:
     void checkCardOK(int role,QString cardid);
@@ -71,6 +74,7 @@ private:
     int scan_flag;
     int student_flag;
     MySerial *myserial;
+    QTimer *timer;
     //0:条形码请求，1-4:CURD操作,5:管理员登录
 };
 #endif // MAINWINDOW_H
