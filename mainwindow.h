@@ -40,6 +40,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void GetTableInfo(int page,int limit);
+    void getFreeTableCount();
 private slots:
     void on_btnScan_pressed();
     void BarCodeScan(QNetworkReply* reply);
@@ -49,6 +50,9 @@ private slots:
     void on_pushButton_3_pressed();
     void on_pushButton_2_pressed();
     void refreshTableData();
+    void on_btnTakeItem_pressed();
+    void getCount(QNetworkReply* reply);
+
 signals:
     void checkCardOK(int role,QString cardid);
 
@@ -59,8 +63,10 @@ private:
     QNetworkAccessManager *manager_scan;
     QNetworkAccessManager *manager_getTableInfo;
     QNetworkAccessManager *manager_checkCardInfo;
+    QNetworkAccessManager *manager_getFreeTableCount;
     QVector<TableInfo*> tableinfo_v;
     TableItem *tableitem;
+    StoreDialog *storedialog;
     int page;
     int scan_flag;
     int student_flag;

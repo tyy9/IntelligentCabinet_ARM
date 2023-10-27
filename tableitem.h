@@ -27,20 +27,24 @@ public:
     explicit TableItem(QWidget *parent = nullptr);
     ~TableItem();
     void LoadItemData(QVector<TableInfo*> &TableInfo_v);
-    void setStore_flag(int store_flag);
+    void setScanflag(int scanflag);
+    void setStudentflag(int studentflag);
     void setOrderId(QString OrderId);
-    void UpdateTableinfo(int role,QString cardid,int status);
+    void UpdateTableinfo(QString cardid,int status);
+    void checkUsrInfo(QString cardid);
 private slots:
     void storeFunc();
     void CheckCardOK(int role,QString cardid);
      void UpdateReply(QNetworkReply* reply);
+    void getUsrInfo(QNetworkReply* reply);
 signals:
      void refreshTableData();
 private:
     Ui::TableItem *ui;
     QString tname;
     QString OrderId;
-    int store_flag;
+    int scanflag;
+    int studentflag;//学生刷卡标志
     StoreDialog *store;
     QNetworkAccessManager *manager_tableUpdate;
     int table_index;//所选中的餐柜

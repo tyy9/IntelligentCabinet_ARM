@@ -20,8 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     page=1;
     //---------------------
     GetTableInfo(1,5);
+    getFreeTableCount();
     scan_flag=0;
     student_flag=0;
+    storedialog=NULL;
     //---------------------
     //串口初始化
     myserial=new MySerial();
@@ -38,7 +40,33 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::refreshTableData(){
-     GetTableInfo(page,5);
+    getFreeTableCount();
+    GetTableInfo(page,5);
+}
+void MainWindow::getFreeTableCount(){
+    //获取url地址
+    QString url_str=QString("http://192.168.63.168:8001/myintelligentcabinet/table-info/findFreeTable");
+    //创建请求
+    QUrl url(url_str);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    //get请求获取图片
+    manager_getFreeTableCount=new QNetworkAccessManager();
+    manager_getFreeTableCount->get(request);
+    connect(manager_getFreeTableCount,SIGNAL(finished(QNetworkReply*)),this,SLOT(getCount(QNetworkReply*)));
+}
+void MainWindow::getCount(QNetworkReply* reply){
+    auto Info=reply->readAll();
+    QTextCodec *codec=QTextCodec::codecForName("UTF-8");
+    auto CountInfo=codec->toUnicode(Info);
+    CountInfo.replace("\\n","\n");
+    QJsonDocument jdoc=QJsonDocument::fromJson(CountInfo.toUtf8());
+    if(!jdoc.isNull()){
+        QJsonObject jobj=jdoc.object();
+        auto dataObj=jobj["data"].toObject();
+        int count=dataObj["count"].toInt();
+        ui->labelCount->setText(QString::number(count)+"/10");
+    }
 }
 void MainWindow::GetTableInfo(int page,int limit){
     //获取url地址
@@ -103,7 +131,7 @@ void MainWindow::on_btnScan_pressed()
 void MainWindow::BarCodeScan(QNetworkReply *reply)
 {
     scan_flag=1;
-    tableitem->setStore_flag(scan_flag);//只有扫描二维码后才可点击餐柜
+    tableitem->setScanflag(1);//只有扫描scan_flag二维码后才可点击餐柜
     auto Info=reply->readAll();
     QString OrderId;
     QMessageBox::information(this,"提示","订单号已记录");
@@ -222,7 +250,7 @@ void MainWindow::checkoutCard(int int_cardid){
 
 }
 void MainWindow::CheckCardInfo(QNetworkReply* reply){
-    tableitem->setStore_flag(scan_flag);//只有扫描二维码后才可点击餐柜
+    //tableitem->setScanflag(scan_flag);//只有扫描二维码后才可点击餐柜
     auto Info=reply->readAll();
     QString OrderId;
     QTextCodec *codec=QTextCodec::codecForName("UTF-8");
@@ -250,5 +278,22 @@ void MainWindow::CheckCardInfo(QNetworkReply* reply){
     if(code==20001){
         emit checkCardOK(role,cardid);
         //更新餐柜信息
+        tableitem->setScanflag(0);
+        scan_flag=0;
+        student_flag=0;
+        tableitem->setStudentflag(0);
+        if(storedialog!=NULL){
+            storedialog->close();
+        }
+
     }
 }
+
+void MainWindow::on_btnTakeItem_pressed()
+{
+    student_flag=1;
+    tableitem->setStudentflag(1);
+    storedialog=new StoreDialog(this);
+    storedialog->exec();
+}
+
