@@ -33,6 +33,7 @@ private slots:
     void on_btnReturn_pressed();
     void LoginReply(QNetworkReply* reply);
     void on_btnLogin_pressed();
+    void refreshData();
 signals:
     void ReturnSignal();
 private:

@@ -47,6 +47,9 @@ private slots:
     void on_btnDelete_pressed();
 
     void on_TableList_itemSelectionChanged();
+
+    void on_btnReturn_pressed();
+
 signals:
     void ReturnSignal();
 private:

@@ -19,6 +19,14 @@ ManagerMenu::ManagerMenu(QWidget *parent) : QMainWindow(parent),
 
 ManagerMenu::~ManagerMenu()
 {
+    qDebug()<<"ManagerMenu close";
+    delete manager_getTableInfo;
+    //delete manager_deleteTableInfo;
+    // delete manager_UpdateTableInfo;
+    foreach (auto tableinfo, tableinfo_v)
+    {
+        delete tableinfo;
+    }
     delete ui;
 }
 void ManagerMenu::GetTableData()
@@ -73,7 +81,7 @@ void ManagerMenu::GetTableDataReply(QNetworkReply *reply)
             QString tname = tableObj["tname"].toString();
             QJsonValue orderIdValue = tableObj["orderId"];
             int orderId = orderIdValue.toInt();
-            QString cardid = tableObj["cardid"].toString();
+            QString cardid = tableObj["cardId"].toString();
             TableInfo *tableinfo = new TableInfo();
             tableinfo->setTname(tname);
             tableinfo->setId(id);
@@ -120,7 +128,7 @@ void ManagerMenu::on_TableList_cellClicked(int row, int column)
     // 记录可能要更新的行
     int flag = 0;
     // 防止更新无效数据
-    if (!ui->TableList->item(row, column))
+    if (!ui->TableList->item(row, 0))
     {
         qDebug() << "error";
         flag = 1;
@@ -175,7 +183,7 @@ void ManagerMenu::UpdateTableData(TableInfo *tableinfo)
     QNetworkRequest request(url);
     // 把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_getTableInfo = new QNetworkAccessManager();
+    manager_UpdateTableInfo = new QNetworkAccessManager();
     QJsonObject jsonObj;
     jsonObj["id"] = tableinfo->getId();
     jsonObj["tname"] = tableinfo->getTname();
@@ -183,8 +191,8 @@ void ManagerMenu::UpdateTableData(TableInfo *tableinfo)
     jsonObj["orderId"] = tableinfo->getOrderId();
     jsonObj["cardId"] = tableinfo->getcardid();
     QJsonDocument jdoc(jsonObj);
-    manager_getTableInfo->put(request, jdoc.toJson(QJsonDocument::Compact));
-    connect(manager_getTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
+    manager_UpdateTableInfo->put(request, jdoc.toJson(QJsonDocument::Compact));
+    connect(manager_UpdateTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
 }
 void ManagerMenu::UpdateTableInfoReply(QNetworkReply *reply)
 {
@@ -246,9 +254,9 @@ void ManagerMenu::DeleteTableData(TableInfo *tableinfo)
     QNetworkRequest request(url);
     // 把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_getTableInfo = new QNetworkAccessManager();
-    manager_getTableInfo->deleteResource(request);
-    connect(manager_getTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
+    manager_deleteTableInfo = new QNetworkAccessManager();
+    manager_deleteTableInfo->deleteResource(request);
+    connect(manager_deleteTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
 }
 void ManagerMenu::DeleteTableInfoReply(QNetworkReply *reply)
 {
@@ -283,9 +291,20 @@ void ManagerMenu::on_TableList_itemSelectionChanged()
     {
         auto row = item->row();
         // 防止删除无用数据
-        if (ui->TableList->item(row, item->column()))
+        if (ui->TableList->item(row, 0))
         {
             delete_row.push_back(row);
         }
     }
 }
+
+
+void ManagerMenu::on_btnReturn_pressed()
+{
+    //获取上一个界面
+    QWidget *w=this->parentWidget();
+    w->show();
+    emit ReturnSignal();
+    delete this;
+}
+

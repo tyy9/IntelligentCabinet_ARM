@@ -6,14 +6,24 @@ LoginWindow::LoginWindow(QWidget *parent) :
     ui(new Ui::LoginWindow)
 {
     ui->setupUi(this);
+    managermenu=NULL;
 }
 
 LoginWindow::~LoginWindow()
 {
+    qDebug()<<"LoginWindow close";
+    delete manager_login;
     delete ui;
 }
 
-
+void LoginWindow::refreshData(){
+    ui->lineEdit_password->clear();
+    ui->lineEdit_usrname->clear();
+//    if(managermenu!=NULL){
+//        delete managermenu;
+//        managermenu=NULL;
+//    }
+}
 
 void LoginWindow::on_btnReturn_pressed()
 {
@@ -57,6 +67,7 @@ void LoginWindow::LoginReply(QNetworkReply* reply){
     if(code==20001){
         QMessageBox::information(this,"提示","登录成功");
         managermenu=new ManagerMenu(this);
+        connect(managermenu,SLOT(ReturnSignal()),this,SLOT(refreshData()));
         this->hide();
         managermenu->show();
     }else{
