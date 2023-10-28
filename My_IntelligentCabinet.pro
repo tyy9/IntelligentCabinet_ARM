@@ -18,6 +18,7 @@ SOURCES += \
     mycamera.cpp \
     myserial.cpp \
     storedialog.cpp \
+    tableadddialog.cpp \
     tableinfo.cpp \
     tableitem.cpp
 
@@ -31,6 +32,7 @@ HEADERS += \
     myhead.h \
     myserial.h \
     storedialog.h \
+    tableadddialog.h \
     tableinfo.h \
     tableitem.h
 
@@ -40,6 +42,7 @@ FORMS += \
     mainwindow.ui \
     managermenu.ui \
     storedialog.ui \
+    tableadddialog.ui \
     tableitem.ui
 
 # Default rules for deployment.

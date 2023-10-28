@@ -77,6 +77,8 @@ private:
     int page;
     int scan_flag;
     int student_flag;
+    int total;//餐柜总数量
+    int pageSize;//页数
     MySerial *myserial;
     QTimer *timer;
     //0:条形码请求，1-4:CURD操作,5:管理员登录

@@ -85,7 +85,7 @@ void MainWindow::getCount(QNetworkReply* reply){
         QJsonObject jobj=jdoc.object();
         auto dataObj=jobj["data"].toObject();
         int count=dataObj["count"].toInt();
-        ui->labelCount->setText(QString::number(count)+"/10");
+        ui->labelCount->setText(QString::number(count)+"/"+QString::number(total));
     }
 }
 void MainWindow::GetTableInfo(int page,int limit){
@@ -198,7 +198,7 @@ void MainWindow::receiveTableInfo(QNetworkReply *reply)
 
         // 获取"data"对象
         QJsonObject dataObj = jsonObj["data"].toObject();
-
+        total=dataObj["total"].toInt();
         // 获取"table_list"数组
         QJsonArray tableList = dataObj["table_list"].toArray();
 
@@ -222,13 +222,20 @@ void MainWindow::receiveTableInfo(QNetworkReply *reply)
         }
         tableitem->LoadItemData(tableinfo_v);
     }
+    if(total%5!=0){
+        //不满1加1
+        pageSize=total/5+1;
+    }else if(total%5==0){
+        pageSize=total/5;
+    }
+
 }
 
 
 void MainWindow::on_pushButton_3_pressed()
 {
     page++;
-    if(page>2){
+    if(page>pageSize){
         page=1;
     }
     foreach(auto tableinfo,tableinfo_v){
@@ -243,7 +250,7 @@ void MainWindow::on_pushButton_2_pressed()
 {
     page--;
     if(page<=0){
-        page=2;
+        page=pageSize;
     }
     foreach(auto tableinfo,tableinfo_v){
         delete tableinfo;

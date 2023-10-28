@@ -31,6 +31,12 @@ void TableItem::setStudentflag(int studentflag){
     this->studentflag=studentflag;
 }
 void TableItem::LoadItemData(QVector<TableInfo*> &TableInfo_v){
+        //先把按钮的文本清空
+        ui->btnTable1->setText("");
+         ui->btnTable2->setText("");
+         ui->btnTable3->setText("");
+          ui->btnTable4->setText("");
+          ui->btnTable5->setText("");
     //为每个tableButton赋值
     int i=1;
     foreach(auto tableinfo, TableInfo_v) {
