@@ -46,7 +46,8 @@ private:
     int scanflag;
     int studentflag;//学生刷卡标志
     StoreDialog *store;
-    QNetworkAccessManager *manager_tableUpdate;
+    QNetworkAccessManager manager_tableUpdate;
+    QNetworkAccessManager manager_tableUpdate2;
     int table_index;//所选中的餐柜
 };
 

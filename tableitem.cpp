@@ -18,6 +18,8 @@ TableItem::TableItem(QWidget *parent) :
     connect(ui->btnTable3,SIGNAL(pressed()),this,SLOT(storeFunc()));
     connect(ui->btnTable4,SIGNAL(pressed()),this,SLOT(storeFunc()));
     connect(ui->btnTable5,SIGNAL(pressed()),this,SLOT(storeFunc()));
+     connect(&manager_tableUpdate2,SIGNAL(finished(QNetworkReply*)),this,SLOT(UpdateReply(QNetworkReply*)));
+    connect(&manager_tableUpdate,SIGNAL(finished(QNetworkReply*)),this,SLOT(getUsrInfo(QNetworkReply*)));
 }
 
 TableItem::~TableItem()
@@ -140,9 +142,8 @@ void TableItem::checkUsrInfo(QString cardid){
     QNetworkRequest request(url);
     //把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_tableUpdate=new QNetworkAccessManager();
-    manager_tableUpdate->post(request,QByteArray());
-    connect(manager_tableUpdate,SIGNAL(finished(QNetworkReply*)),this,SLOT(getUsrInfo(QNetworkReply*)));
+    manager_tableUpdate.post(request,QByteArray());
+
 }
 void TableItem::UpdateTableinfo(QString cardid,int status){
     //获取url地址
@@ -153,14 +154,13 @@ void TableItem::UpdateTableinfo(QString cardid,int status){
     QNetworkRequest request(url);
     //把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_tableUpdate=new QNetworkAccessManager();
     QJsonObject jsonObj;
     jsonObj["cardId"]=cardid;
     jsonObj["state"]=1;
     qDebug()<<"OrderId:"<<OrderId;
     QJsonDocument jdoc(jsonObj);
-    manager_tableUpdate->post(request,jdoc.toJson(QJsonDocument::Compact));
-    connect(manager_tableUpdate,SIGNAL(finished(QNetworkReply*)),this,SLOT(UpdateReply(QNetworkReply*)));
+    manager_tableUpdate2.post(request,jdoc.toJson(QJsonDocument::Compact));
+
 }
 void TableItem::getUsrInfo(QNetworkReply*reply){
    //tableitem->setScanflag(scan_flag);//只有扫描二维码后才可点击餐柜
@@ -175,11 +175,15 @@ void TableItem::getUsrInfo(QNetworkReply*reply){
         tname=obj["tName"].toString();
         qDebug()<<"getUsrInfo:"<<tname;
     }
+    reply->abort();
+    reply->deleteLater();
     //出柜
     UpdateTableinfo("0",2);
 }
 void TableItem::UpdateReply(QNetworkReply* reply){
     qDebug()<<reply->readAll();
+    reply->abort();
+    reply->deleteLater();
     //通知主窗口重新获取table数据并刷新
     emit refreshTableData();
 }

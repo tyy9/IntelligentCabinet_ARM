@@ -53,9 +53,9 @@ private slots:
 signals:
     void ReturnSignal();
 private:
-    QNetworkAccessManager *manager_getTableInfo;
-    QNetworkAccessManager *manager_UpdateTableInfo;
-    QNetworkAccessManager *manager_deleteTableInfo;
+    QNetworkAccessManager manager_getTableInfo;
+    QNetworkAccessManager manager_UpdateTableInfo;
+    QNetworkAccessManager manager_deleteTableInfo;
     QVector<TableInfo*> tableinfo_v;
     TableAddDialog *tableAddDialog;
     QVector<int> update_row;//支持多行更新

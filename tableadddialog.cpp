@@ -12,8 +12,9 @@ TableAddDialog::TableAddDialog(QWidget *parent) :
 TableAddDialog::~TableAddDialog()
 {
     qDebug()<<"TableAddDialog close";
-    delete manager_AddTable;
-    delete tableinfo;
+    if(tableinfo!=NULL){
+       delete tableinfo;
+    }
     delete ui;
 }
 
@@ -31,15 +32,14 @@ void TableAddDialog::on_btnAdd_pressed()
     QNetworkRequest request(url);
     //把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_AddTable=new QNetworkAccessManager();
     QJsonObject jsonObj;
     jsonObj["tname"]=tableinfo->getTname();
     jsonObj["state"]=tableinfo->getState();
     jsonObj["orderId"]=tableinfo->getOrderId();
     jsonObj["cardId"]=tableinfo->getcardid();
     QJsonDocument jdoc(jsonObj);
-    manager_AddTable->post(request,jdoc.toJson(QJsonDocument::Compact));
-    connect(manager_AddTable,SIGNAL(finished(QNetworkReply*)),this,SLOT(AddTableReply(QNetworkReply*)));
+    manager_AddTable.post(request,jdoc.toJson(QJsonDocument::Compact));
+    connect(&manager_AddTable,SIGNAL(finished(QNetworkReply*)),this,SLOT(AddTableReply(QNetworkReply*)));
 }
 
 void TableAddDialog::AddTableReply(QNetworkReply* reply){
@@ -57,8 +57,9 @@ void TableAddDialog::AddTableReply(QNetworkReply* reply){
     if(code==20001){
         QMessageBox::information(this,"提示","添加成功");
         this->close();
-        QThread::sleep(2);//先关后解析
+        QThread::sleep(1);//先关后解析
         emit ReturnToMenu();
+        delete this;
     }else{
         QMessageBox::information(this,"提示","添加失败");
     }
@@ -70,5 +71,6 @@ void TableAddDialog::on_btnReturn_pressed()
     this->close();
     QThread::sleep(1);//先关后解析
     emit ReturnToMenu();
+    delete this;
 }
 

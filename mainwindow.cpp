@@ -18,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
     tableitem=new TableItem(this);
     tableitem->setGeometry(0,280,800,200);
     page=1;
+    //----------------------
     //---------------------
     GetTableInfo(1,5);
-    getFreeTableCount();
     scan_flag=0;
     student_flag=0;
     storedialog=NULL;
@@ -36,12 +36,16 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start();
     connect(timer,SIGNAL(timeout()),this,SLOT(MyClock()));
     //--------------
-
+    //请求的信号与槽
+    connect(&manager_getFreeTableCount,SIGNAL(finished(QNetworkReply*)),this,SLOT(getCount(QNetworkReply*)));
+    connect(&manager_getTableInfo,SIGNAL(finished(QNetworkReply*)),this,SLOT(receiveTableInfo(QNetworkReply*)));
+    connect(&manager_scan,SIGNAL(finished(QNetworkReply*)),this,SLOT(BarCodeScan(QNetworkReply*)));
+    connect(&manager_checkCardInfo,SIGNAL(finished(QNetworkReply*)),this,SLOT(CheckCardInfo(QNetworkReply*)));
     //-------------
     //主窗口的自己的信号与槽
     connect(this,SIGNAL(checkCardOK(int,QString)),tableitem,SLOT(CheckCardOK(int,QString)));
     connect(tableitem,SIGNAL(refreshTableData()),this,SLOT(refreshTableData()));
-    //connect(loginwindow,SIGNAL(ReturnSignal()),this,SLOT(refreshTableData()));
+
 }
 
 MainWindow::~MainWindow()
@@ -56,12 +60,11 @@ void MainWindow::MyClock(){
     ui->labelClock->setText(time.toString("hh:mm:ss"));
 }
 void MainWindow::refreshTableData(){
+    GetTableInfo(page,5);
     if(!camera->isRunning()){
         camera->start();
         camera->setFlag(1);//开启摄像头
     }
-    getFreeTableCount();
-    GetTableInfo(page,5);
 }
 void MainWindow::getFreeTableCount(){
     //获取url地址
@@ -71,9 +74,8 @@ void MainWindow::getFreeTableCount(){
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     //get请求获取图片
-    manager_getFreeTableCount=new QNetworkAccessManager();
-    manager_getFreeTableCount->get(request);
-    connect(manager_getFreeTableCount,SIGNAL(finished(QNetworkReply*)),this,SLOT(getCount(QNetworkReply*)));
+    manager_getFreeTableCount.get(request);
+
 }
 void MainWindow::getCount(QNetworkReply* reply){
     auto Info=reply->readAll();
@@ -97,9 +99,8 @@ void MainWindow::GetTableInfo(int page,int limit){
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     //get请求获取图片
-    manager_getTableInfo=new QNetworkAccessManager();
-    manager_getTableInfo->post(request,QByteArray());
-    connect(manager_getTableInfo,SIGNAL(finished(QNetworkReply*)),this,SLOT(receiveTableInfo(QNetworkReply*)));
+    manager_getTableInfo.post(request,QByteArray());
+
 }
 void MainWindow::on_btnScan_pressed()
 {
@@ -141,12 +142,12 @@ void MainWindow::on_btnScan_pressed()
     request.setRawHeader("Authorization",appCode.toLocal8Bit());
     request.setRawHeader("Host",host.toLocal8Bit());
     //get请求获取图片
-    manager_scan=new QNetworkAccessManager();
+    //manager_scan=new QNetworkAccessManager();
     QJsonObject jsonObj;
     jsonObj["image"]=barry.toBase64().data();
     QJsonDocument jdoc(jsonObj);
-    manager_scan->post(request,jdoc.toJson(QJsonDocument::Compact));
-    connect(manager_scan,SIGNAL(finished(QNetworkReply*)),this,SLOT(BarCodeScan(QNetworkReply*)));
+    manager_scan.post(request,jdoc.toJson(QJsonDocument::Compact));
+
 }
 void MainWindow::BarCodeScan(QNetworkReply *reply)
 {
@@ -157,7 +158,7 @@ void MainWindow::BarCodeScan(QNetworkReply *reply)
     QMessageBox::information(this,"提示","订单号已记录");
     QTextCodec *codec=QTextCodec::codecForName("UTF-8");
     auto CodeInfo=codec->toUnicode(Info);
-    qDebug()<<CodeInfo;
+    //qDebug()<<CodeInfo;
     CodeInfo.replace("\\n","\n");
     QJsonDocument jdoc=QJsonDocument::fromJson(CodeInfo.toUtf8());
     if(!jdoc.isNull()){
@@ -173,6 +174,8 @@ void MainWindow::BarCodeScan(QNetworkReply *reply)
         ui->LabelOrderId->setText(OrderId);
         tableitem->setOrderId(OrderId.toInt());
     }
+    reply->abort();
+    reply->deleteLater();
 }
 void MainWindow::receiveTableInfo(QNetworkReply *reply)
 {
@@ -183,11 +186,11 @@ void MainWindow::receiveTableInfo(QNetworkReply *reply)
     tableinfo_v.clear();
     //------------
     auto Info=reply->readAll();
-    qDebug()<<Info;
+    //qDebug()<<Info;
     QTextCodec *codec=QTextCodec::codecForName("UTF-8");
     QString tableinfo=QString::fromUtf8(Info);
     //CodeInfo.replace("\\n","\n");
-    qDebug().noquote() << tableinfo;
+    //qDebug().noquote() << tableinfo;
     // QMessageBox::information(this,"提示","订单号已记录");
     // 解析json数据
     // 遍历获取json数据
@@ -228,7 +231,11 @@ void MainWindow::receiveTableInfo(QNetworkReply *reply)
     }else if(total%5==0){
         pageSize=total/5;
     }
-
+    //显示页数数据
+    QString data=QString("页面:%1/%2").arg(page).arg(pageSize);
+    ui->label_page->setText(data);
+    //获取空闲数
+    getFreeTableCount();
 }
 
 
@@ -270,9 +277,8 @@ void MainWindow::checkoutCard(int int_cardid){
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         //get请求获取图片
-        manager_checkCardInfo=new QNetworkAccessManager();
-        manager_checkCardInfo->post(request,QByteArray());
-        connect(manager_checkCardInfo,SIGNAL(finished(QNetworkReply*)),this,SLOT(CheckCardInfo(QNetworkReply*)));
+        manager_checkCardInfo.post(request,QByteArray());
+
     }
 
 }
@@ -282,7 +288,7 @@ void MainWindow::CheckCardInfo(QNetworkReply* reply){
     QString OrderId;
     QTextCodec *codec=QTextCodec::codecForName("UTF-8");
     auto CodeInfo=codec->toUnicode(Info);
-    qDebug()<<CodeInfo;
+    //qDebug()<<CodeInfo;
     CodeInfo.replace("\\n","\n");
     //----------------
     int code=20000;
@@ -314,6 +320,8 @@ void MainWindow::CheckCardInfo(QNetworkReply* reply){
         }
 
     }
+    reply->abort();
+    reply->deleteLater();
 }
 
 void MainWindow::on_btnTakeItem_pressed()
@@ -331,6 +339,7 @@ void MainWindow::on_btnAdmin_pressed()
     loginwindow=new LoginWindow(this);
     connect(loginwindow,SIGNAL(ReturnSignal()),this,SLOT(refreshTableData()));
     camera->setFlag(0);//关闭摄像头
+    QThread::sleep(1);//等待摄像头完全关闭后在显示登录界面
     loginwindow->show();
     this->hide();
 }

@@ -275,6 +275,19 @@ border-image: url(:/new/prefix1/res/icon/scan.png);</string>
      <string>取餐</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_page">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>页数</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

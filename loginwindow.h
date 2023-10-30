@@ -38,7 +38,7 @@ signals:
     void ReturnSignal();
 private:
     Ui::LoginWindow *ui;
-    QNetworkAccessManager *manager_login;
+    QNetworkAccessManager manager_login;
     ManagerMenu *managermenu;
 };
 

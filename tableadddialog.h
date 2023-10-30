@@ -39,7 +39,7 @@ signals:
 private:
     Ui::TableAddDialog *ui;
     TableInfo *tableinfo;
-    QNetworkAccessManager *manager_AddTable;
+    QNetworkAccessManager manager_AddTable;
 };
 
 #endif // TABLEADDDIALOG_H

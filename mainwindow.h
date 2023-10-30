@@ -66,10 +66,10 @@ private:
     Ui::MainWindow *ui;
     Camera *camera;
     QString cardid;
-    QNetworkAccessManager *manager_scan;
-    QNetworkAccessManager *manager_getTableInfo;
-    QNetworkAccessManager *manager_checkCardInfo;
-    QNetworkAccessManager *manager_getFreeTableCount;
+    QNetworkAccessManager manager_scan;
+    QNetworkAccessManager manager_getTableInfo;
+    QNetworkAccessManager manager_checkCardInfo;
+    QNetworkAccessManager manager_getFreeTableCount;
     LoginWindow *loginwindow;
     QVector<TableInfo*> tableinfo_v;
     TableItem *tableitem;
@@ -77,7 +77,7 @@ private:
     int page;
     int scan_flag;
     int student_flag;
-    int total;//餐柜总数量
+    volatile int total;//餐柜总数量
     int pageSize;//页数
     MySerial *myserial;
     QTimer *timer;

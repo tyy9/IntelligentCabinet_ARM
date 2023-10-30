@@ -15,14 +15,14 @@ ManagerMenu::ManagerMenu(QWidget *parent) : QMainWindow(parent),
                                                            << "state"
                                                            << "card_id");
     ui->TableList->setRowCount(100);
+    connect(&manager_getTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(GetTableDataReply(QNetworkReply *)));
+    connect(&manager_UpdateTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
+    connect(&manager_deleteTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(DeleteTableInfoReply(QNetworkReply *)));
 }
 
 ManagerMenu::~ManagerMenu()
 {
     qDebug()<<"ManagerMenu close";
-    delete manager_getTableInfo;
-    //delete manager_deleteTableInfo;
-    // delete manager_UpdateTableInfo;
     foreach (auto tableinfo, tableinfo_v)
     {
         delete tableinfo;
@@ -31,6 +31,7 @@ ManagerMenu::~ManagerMenu()
 }
 void ManagerMenu::GetTableData()
 {
+
     // 获取url地址
     QString url_str = QString("http://192.168.63.168:8001/myintelligentcabinet/usr-order/findAll");
     // 创建请求
@@ -38,9 +39,8 @@ void ManagerMenu::GetTableData()
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     // get请求获取图片
-    manager_getTableInfo = new QNetworkAccessManager();
-    manager_getTableInfo->get(request);
-    connect(manager_getTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(GetTableDataReply(QNetworkReply *)));
+    manager_getTableInfo.get(request);
+
 }
 void ManagerMenu::GetTableDataReply(QNetworkReply *reply)
 {
@@ -102,18 +102,20 @@ void ManagerMenu::GetTableDataReply(QNetworkReply *reply)
         ui->TableList->setItem(i, 4, new QTableWidgetItem(tableinfo->getcardid()));
         i++;
     }
+    reply->abort();
+    reply->deleteLater();
 }
 void ManagerMenu::refreshTableData()
 {
     // 先清空表格数据
     ui->TableList->clearContents();
     GetTableData();
-    // 销毁对话框内存
-    if (tableAddDialog != NULL)
-    {
-        delete tableAddDialog;
-        tableAddDialog = NULL;
-    }
+//    // 销毁对话框内存
+//    if (tableAddDialog != NULL)
+//    {
+//        delete tableAddDialog;
+//        tableAddDialog = NULL;
+//    }
 }
 void ManagerMenu::on_btnAdd_pressed()
 {
@@ -153,12 +155,15 @@ void ManagerMenu::on_btnUpdate_pressed()
     // 获取容器中各行的数据，保存到类中并发送请求
     foreach (int row, update_row)
     {
+        qDebug()<<"on_btnUpdate_pressed--row:"<<row;
         QVector<QTableWidgetItem *> tableitem_v;
+        qDebug()<<1;
         for (int i = 0; i < ui->TableList->columnCount(); i++)
         {
             auto item = ui->TableList->item(row, i);
             tableitem_v.push_back(item);
         }
+        qDebug()<<3;
         TableInfo *tableinfo = new TableInfo();
         // 多行更新
         tableinfo->setId((tableitem_v.at(0)->text()).toInt());
@@ -167,6 +172,7 @@ void ManagerMenu::on_btnUpdate_pressed()
         tableinfo->setState((tableitem_v.at(3)->text()).toInt());
         tableinfo->setCardid(tableitem_v.at(4)->text());
         tableinfo->toString();
+        qDebug()<<2;
         UpdateTableData(tableinfo);
     }
     update_row.clear(); // 清除所要更新的行数据
@@ -183,7 +189,6 @@ void ManagerMenu::UpdateTableData(TableInfo *tableinfo)
     QNetworkRequest request(url);
     // 把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_UpdateTableInfo = new QNetworkAccessManager();
     QJsonObject jsonObj;
     jsonObj["id"] = tableinfo->getId();
     jsonObj["tname"] = tableinfo->getTname();
@@ -191,8 +196,8 @@ void ManagerMenu::UpdateTableData(TableInfo *tableinfo)
     jsonObj["orderId"] = tableinfo->getOrderId();
     jsonObj["cardId"] = tableinfo->getcardid();
     QJsonDocument jdoc(jsonObj);
-    manager_UpdateTableInfo->put(request, jdoc.toJson(QJsonDocument::Compact));
-    connect(manager_UpdateTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
+    manager_UpdateTableInfo.put(request, jdoc.toJson(QJsonDocument::Compact));
+
 }
 void ManagerMenu::UpdateTableInfoReply(QNetworkReply *reply)
 {
@@ -215,6 +220,8 @@ void ManagerMenu::UpdateTableInfoReply(QNetworkReply *reply)
     {
         QMessageBox::information(this, "提示", "更新失败");
     }
+    reply->abort();
+    reply->deleteLater();
 }
 
 // 支持多行删除
@@ -240,6 +247,7 @@ void ManagerMenu::on_btnDelete_pressed()
         DeleteTableData(tableinfo);
     }
     delete_row.clear(); // 清除所要更新的行数据
+    update_row.clear();//防止更新已删除的行数据
     QMessageBox::information(this, "提示", "删除完毕");
     QThread::sleep(1);
     refreshTableData();
@@ -254,9 +262,8 @@ void ManagerMenu::DeleteTableData(TableInfo *tableinfo)
     QNetworkRequest request(url);
     // 把appcode和服务器主机域名添加到请求对象中
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    manager_deleteTableInfo = new QNetworkAccessManager();
-    manager_deleteTableInfo->deleteResource(request);
-    connect(manager_deleteTableInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(UpdateTableInfoReply(QNetworkReply *)));
+    manager_deleteTableInfo.deleteResource(request);
+
 }
 void ManagerMenu::DeleteTableInfoReply(QNetworkReply *reply)
 {
@@ -270,6 +277,7 @@ void ManagerMenu::DeleteTableInfoReply(QNetworkReply *reply)
     {
         QJsonObject jsonObj = jdoc.object();
         code = jsonObj["code"].toInt();
+        qDebug()<<"code:"<<code;
     }
     if (code == 20001)
     {
@@ -279,6 +287,8 @@ void ManagerMenu::DeleteTableInfoReply(QNetworkReply *reply)
     {
         QMessageBox::information(this, "提示", "删除失败");
     }
+    reply->abort();
+    reply->deleteLater();
 }
 
 void ManagerMenu::on_TableList_itemSelectionChanged()
@@ -289,11 +299,21 @@ void ManagerMenu::on_TableList_itemSelectionChanged()
     // 获取行值
     foreach (auto item, items)
     {
+        int flag=0;
         auto row = item->row();
+        //防止放入重复行数
+        foreach(int item,delete_row){
+            if(item==row){
+                flag=1;
+            }
+        }
         // 防止删除无用数据
-        if (ui->TableList->item(row, 0))
+        if (ui->TableList->item(row, item->column()))
         {
-            delete_row.push_back(row);
+            if(flag==0){
+                qDebug()<<"row:"<<row;
+                delete_row.push_back(row);
+            }
         }
     }
 }
